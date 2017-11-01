@@ -24,4 +24,16 @@ public class PlayerController : MonoBehaviour { //Motion tutorial class; not rel
 		Vector3 movement = new Vector3 (moveX, moveY, moveZ);
 		rb.AddForce (movement * speed);
 	}
+
+	void OnTriggerEnter(Collider other){
+		Debug.Log ("Triggered");
+		char[] name = other.gameObject.name.ToCharArray();
+		if (name [name.Length - 1].Equals ('9')) {
+			Debug.Log ("On last");
+			gameObject.transform.parent.GetComponent<BuildWorld> ().BuildChunk ();
+			Vector3 curr_position = gameObject.transform.position;
+			gameObject.transform.position = new Vector3 (curr_position.x, curr_position.y, 0);
+		}
+	}
+			
 }
