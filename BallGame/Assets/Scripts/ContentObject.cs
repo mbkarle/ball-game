@@ -27,6 +27,11 @@ public abstract class ContentObject /*: GameObject*/ {
 		go.GetComponent<Renderer>().materials = mats;
 	}
 
+	public static GameObject buildPrefab(string name){
+		GameObject go = (Resources.Load (name, typeof(GameObject)) as GameObject);
+	//	go.transform.parent = GameObject.Find ("Content").transform;
+		return go;
+	}
 
 }
 
