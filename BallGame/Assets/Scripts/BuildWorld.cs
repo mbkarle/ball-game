@@ -3,6 +3,8 @@ using System.Collections;
 
 public class BuildWorld : MonoBehaviour {
 
+	public float xAccelOffset, zAccelOffset;
+
 	private GameObject ground, player;
 	private ContentCube groundCube;
 	private ArrayList chunks;
@@ -19,14 +21,15 @@ public class BuildWorld : MonoBehaviour {
 //		ground.transform.SetParent(GameObject.Find("Content").transform);
 //		ground = Instantiate(ContentObject.buildPrefab("BasicStage"));
 //		ground.transform.parent = gameObject.transform;
+
+		xAccelOffset = Input.acceleration.x;
+		zAccelOffset = -Input.acceleration.z;
 	
 		player = new GameObject ();
 		ContentSphere.convert (player, "player", 10, 1.5f, 10, 3, 3, 3);
 		ContentSphere.addMaterial (player.name, "BallColor");
 		player.AddComponent<PlayerController> ();
 		player.GetComponent<PlayerController> ().speed = 10;
-
-
 
 		GameObject camera = GameObject.Find ("Main Camera");
 		camera.GetComponent<CameraController> ().player = player;
@@ -37,7 +40,27 @@ public class BuildWorld : MonoBehaviour {
 	
 	// Update is called once per frame
 	void LateUpdate () {
-		
+		/*
+		 * Attempted to rotate each chunk in correct z
+		 * direction based on accelerometer, didn't work
+		 * but this is sort of a starting point.
+		 */
+
+
+		//float rotationX = Input.acceleration.x - xAccelOffset;
+		//float rotationZ = -Input.acceleration.z - zAccelOffset;
+
+//		Vector3 temp = Input.acceleration;
+//		temp.x -= xAccelOffset;
+//		temp.z -= zAccelOffset;
+
+//		foreach (GameObject go in chunks) {
+//			if (temp.z > 0 && go.transform.eulerAngles.z <= temp.z) {
+//				go.transform.Rotate (0.0f, 0.0f, 1.0f);
+//			} else if (temp.z < 0 && go.transform.eulerAngles.z >= temp.z) {
+//				go.transform.Rotate (0.0f, 0.0f, -1.0f);
+//			}
+//		}
 	}
 
 	public void BuildChunk(){

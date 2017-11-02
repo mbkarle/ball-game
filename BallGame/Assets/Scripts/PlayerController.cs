@@ -23,6 +23,19 @@ public class PlayerController : MonoBehaviour { //Motion tutorial class; not rel
 
 		Vector3 movement = new Vector3 (moveX, moveY, moveZ);
 		rb.AddForce (movement * speed);
+
+		//tilt controls that act directly on ball
+		float xAccel = Input.acceleration.x;
+		float zAccel = -Input.acceleration.z;
+		float jumpAccel = 0f;
+
+		if (Input.touchCount > 0) {
+			jumpAccel = 3f;
+		}
+
+		Vector3 movementTilt = new Vector3 (xAccel - gameObject.transform.parent.GetComponent<BuildWorld> ().xAccelOffset, jumpAccel, zAccel - gameObject.transform.parent.GetComponent<BuildWorld> ().zAccelOffset);
+		rb.AddForce (movementTilt * 15);
+			
 	}
 
 	void OnTriggerEnter(Collider other){
