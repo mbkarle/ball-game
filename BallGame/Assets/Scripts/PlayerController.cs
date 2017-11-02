@@ -12,17 +12,17 @@ public class PlayerController : MonoBehaviour { //Motion tutorial class; not rel
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		float moveX = Input.GetAxis ("Horizontal");
-		float moveZ = Input.GetAxis ("Vertical");
-		//Debug.Log (moveX);
-		float moveY = 0f;
-		if (Input.GetKey ("space")) {
-			moveY = 3f;
-			//Debug.Log ("Jumping");
-		}
+//		float moveX = Input.GetAxis ("Horizontal");
+//		float moveZ = Input.GetAxis ("Vertical");
+//		//Debug.Log (moveX);
+//		float moveY = 0f;
+//		if (Input.GetKey ("space")) {
+//			moveY = 3f;
+//			//Debug.Log ("Jumping");
+//		}
 
-		Vector3 movement = new Vector3 (moveX, moveY, moveZ);
-		rb.AddForce (movement * speed);
+//		Vector3 movement = new Vector3 (moveX, moveY, moveZ);
+//		rb.AddForce (movement * speed);
 
 		//tilt controls that act directly on ball
 		float xAccel = Input.acceleration.x;

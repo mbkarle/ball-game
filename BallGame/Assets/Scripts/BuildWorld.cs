@@ -4,6 +4,7 @@ using System.Collections;
 public class BuildWorld : MonoBehaviour {
 
 	public float xAccelOffset, zAccelOffset;
+	public float speed;
 
 	private GameObject ground, player;
 	private ContentCube groundCube;
@@ -39,13 +40,21 @@ public class BuildWorld : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void LateUpdate () {
-		/*
-		 * Attempted to rotate each chunk in correct z
-		 * direction based on accelerometer, didn't work
-		 * but this is sort of a starting point.
-		 */
+	void FixedUpdate () {
 
+		float zMovement = Input.GetAxis ("Horizontal");
+		float xMovement = Input.GetAxis ("Vertical");
+
+		Transform gameObj = gameObject.transform;
+
+		gameObj.localRotation = Quaternion.Euler (gameObj.localRotation.eulerAngles.x + speed * xMovement, 0.0f, gameObj.localRotation.eulerAngles.z + speed * -zMovement);
+//		if (zMovement > 0 && gameObj.localRotation.eulerAngles.z <= 30 && gameObj.localRotation.eulerAngles.z >= -35) { working on settings angle limits
+//			gameObj.localRotation = Quaternion.Euler (0.0f, 0.0f, gameObj.localRotation.eulerAngles.z + speed * -zMovement);
+//		} else if (zMovement < 0 && gameObj.localRotation.eulerAngles.z >= -30 && gameObj.localRotation.eulerAngles.z <= 35) {
+//			gameObj.localRotation = Quaternion.Euler (0.0f, 0.0f, gameObj.localRotation.eulerAngles.z + speed * -zMovement);
+//		}
+
+		Debug.Log ("" + gameObj.localRotation.eulerAngles.z + " " + gameObj.localRotation.eulerAngles.x);
 
 		//float rotationX = Input.acceleration.x - xAccelOffset;
 		//float rotationZ = -Input.acceleration.z - zAccelOffset;
