@@ -12,6 +12,7 @@ public class BuildWorld : MonoBehaviour {
 
 	private Material ballColor;
 	private PhysicMaterial surface;
+	private Vector3 contentRotation;
 
 	// Use this for initialization
 	void Start () { //TODO: create classes for these objects
@@ -44,10 +45,13 @@ public class BuildWorld : MonoBehaviour {
 
 		float zMovement = Input.GetAxis ("Horizontal");
 		float xMovement = Input.GetAxis ("Vertical");
-
+		contentRotation.x += speed * xMovement;
+		contentRotation.z += speed * -zMovement;
+		//Debug.Log (contentRotation);
 		Transform gameObj = gameObject.transform;
 
-		gameObj.localRotation = Quaternion.Euler (gameObj.localRotation.eulerAngles.x + speed * xMovement, 0.0f, gameObj.localRotation.eulerAngles.z + speed * -zMovement);
+		transform.localRotation = Quaternion.AngleAxis (contentRotation.x, Vector3.right) * Quaternion.AngleAxis (contentRotation.z, Vector3.forward);
+			
 //		if (zMovement > 0 && gameObj.localRotation.eulerAngles.z <= 30 && gameObj.localRotation.eulerAngles.z >= -35) { working on settings angle limits
 //			gameObj.localRotation = Quaternion.Euler (0.0f, 0.0f, gameObj.localRotation.eulerAngles.z + speed * -zMovement);
 //		} else if (zMovement < 0 && gameObj.localRotation.eulerAngles.z >= -30 && gameObj.localRotation.eulerAngles.z <= 35) {
