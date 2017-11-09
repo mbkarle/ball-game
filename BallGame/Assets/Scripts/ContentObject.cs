@@ -14,11 +14,19 @@ public abstract class ContentObject /*: GameObject*/ {
 	}
 		
 
-	public static void setTransform(GameObject go, string name, float x, float y, float z, float scaleX, float scaleY, float scaleZ){
-		go.transform.parent = GameObject.Find ("Content").transform;
+	public static void setTransform(GameObject go, string name, float x, float y, float z, float scaleX, float scaleY, float scaleZ, bool contentIsParent){
+		if (contentIsParent) {
+			go.transform.parent = GameObject.Find ("Content").transform;
+		}
 		go.transform.position = new Vector3 (x, y, z);
 		go.transform.localScale = new Vector3 (scaleX, scaleY, scaleZ);
 		go.name = name;
+	}
+
+	public static void rotate(GameObject go, float xDegrees, float yDegrees, float zDegrees){
+
+		go.transform.localRotation = Quaternion.AngleAxis (xDegrees, Vector3.right) * Quaternion.AngleAxis (yDegrees, Vector3.up) * Quaternion.AngleAxis (zDegrees, Vector3.forward);
+		//Debug.Log ("Requested: " + zDegrees + "; Received: " + go.transform.localRotation.eulerAngles.z);
 	}
 
 	public static void addMaterial(string goName, string matName){
@@ -42,7 +50,7 @@ public class ContentCube : ContentObject {
 	}*/
 
 	public static void convert(GameObject go, string name, float x, float y, float z, float scaleX, float scaleY, float scaleZ){
-		setTransform (go, name, x, y, z, scaleX, scaleY, scaleZ);
+		setTransform (go, name, x, y, z, scaleX, scaleY, scaleZ, true);
 		GameObject primitive = GameObject.CreatePrimitive (PrimitiveType.Cube);
 		Mesh mesh = primitive.GetComponent<MeshFilter> ().mesh;
 		go.AddComponent<BoxCollider> ();
@@ -63,7 +71,7 @@ public class ContentCube : ContentObject {
 
 public class ContentSphere : ContentObject {
 	public static void convert(GameObject go, string name, float x, float y, float z, float scaleX, float scaleY, float scaleZ){
-		setTransform(go, name, x, y, z, scaleX, scaleY, scaleZ);
+		setTransform(go, name, x, y, z, scaleX, scaleY, scaleZ, true);
 		GameObject primitive = GameObject.CreatePrimitive (PrimitiveType.Sphere);
 		Mesh mesh = primitive.GetComponent<MeshFilter>().mesh;
 
