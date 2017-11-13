@@ -39,10 +39,4 @@ sysinfo.txt
 .Trashes
 ehthumbs.db
 Thumbs.db
-BallGame/Temp/UnityTempFile-8aee2e81f90184e82a099e29f1409d86
-*.mdb
-*.backup
-*.dll
-BallGame/Library/metadata/61/61e1db40f37d04f91837fcaa8872ea70
-*.dwlt
-BallGame/Library/assetDatabase3
+*.meta

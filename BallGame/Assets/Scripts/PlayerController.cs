@@ -16,10 +16,10 @@ public class PlayerController : MonoBehaviour { //Motion tutorial class; not rel
 //		float moveZ = Input.GetAxis ("Vertical");
 //		//Debug.Log (moveX);
 //		float moveY = 0f;
-//		if (Input.GetKey ("space")) {
-//			moveY = 3f;
-//			//Debug.Log ("Jumping");
-//		}
+		if (Input.GetKey ("space")) {
+			rb.AddForce (new Vector3 (0f, -30f, 0f));
+			//Debug.Log ("Jumping");
+		}
 
 //		Vector3 movement = new Vector3 (moveX, moveY, moveZ);
 //		rb.AddForce (movement * speed);
@@ -40,12 +40,15 @@ public class PlayerController : MonoBehaviour { //Motion tutorial class; not rel
 
 	void OnTriggerEnter(Collider other){
 		Debug.Log ("Triggered");
-		char[] name = other.gameObject.name.ToCharArray();
-		if (name [name.Length - 1].Equals ('9')) {
-			Debug.Log ("On last");
-			gameObject.transform.parent.GetComponent<BuildWorld> ().BuildChunk ();
-			Vector3 curr_position = gameObject.transform.position;
-			gameObject.transform.position = new Vector3 (curr_position.x, curr_position.y, 0);
+		char[] name = other.gameObject.transform.parent.transform.parent.name.ToCharArray();
+		string tag = "" + name [name.Length - 1];
+		Debug.Log (tag);
+		int nametag = int.Parse("" + (name [name.Length - 1]));
+		if (nametag != 0) {
+			Debug.Log ("Building");
+			gameObject.transform.parent.GetComponent<BuildWorld> ().BuildChunk (nametag, nametag - 1);
+//			Vector3 curr_position = gameObject.transform.position;
+//			gameObject.transform.position = new Vector3 (curr_position.x, curr_position.y, 0);
 		}
 	}
 			
