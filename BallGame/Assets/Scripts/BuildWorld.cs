@@ -37,11 +37,16 @@ public class BuildWorld : MonoBehaviour {
 		ContentSphere.addMaterial (player.name, "BallColor");
 		player.AddComponent<PlayerController> ();
 		player.GetComponent<PlayerController> ().speed = 10;
+	//	player.GetComponent<Rigidbody> ().isKinematic = true;
+
 
 		GameObject camera = GameObject.Find ("Main Camera");
 		camera.GetComponent<CameraController> ().player = player;
 
 		BuildChunk (4, null);
+
+		GameObject enclosure = Instantiate (ContentObject.buildPrefab ("Enclosure") as GameObject);
+		ContentObject.setTransform (enclosure, "Enclosure", 0, 0, 0, enclosure.transform.localScale.x, enclosure.transform.localScale.y, enclosure.transform.localScale.z, true);
 
 //		foreach (GameObject go in GameObject.Find("Content").transform) {
 //			Debug.Log ((go).name);
@@ -184,6 +189,7 @@ public class BuildWorld : MonoBehaviour {
 					chunksList.Add (toChange); //add objects being kept to the replacement list
 				}
 				//shift player back to start
+				Debug.Log("Moving player");
 				player.transform.position = new Vector3 (player.transform.position.x, player.transform.position.y, player.transform.position.z - sum);
 			}
 		}
@@ -260,5 +266,8 @@ public class BuildWorld : MonoBehaviour {
 		ContentObject.rotate(gameObject, curr_rotation.x, curr_rotation.y, curr_rotation.z); //rotate back into old rotation
 	}
 
-
+	public void setContentRotation(float x, float y, float z){
+		contentRotation = new Vector3 (x, y, z);
+		ContentObject.rotate (gameObject, x, y, z);
+	}
 }

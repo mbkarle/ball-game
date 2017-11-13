@@ -5,9 +5,14 @@ public class PlayerController : MonoBehaviour { //Motion tutorial class; not rel
 
 	public float speed;
 	private Rigidbody rb;
+	private Vector3 startCoords;
+	//private GameObject enclosure;
 	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody> ();
+		startCoords = gameObject.transform.position;
+		Debug.Log (gameObject.transform.position);
+		
 	}
 	
 	// Update is called once per frame
@@ -20,10 +25,10 @@ public class PlayerController : MonoBehaviour { //Motion tutorial class; not rel
 			rb.AddForce (new Vector3 (0f, -30f, 0f));
 			//Debug.Log ("Jumping");
 		}
+		//Debug.Log (gameObject.transform.position);
 
 //		Vector3 movement = new Vector3 (moveX, moveY, moveZ);
 //		rb.AddForce (movement * speed);
-
 		//tilt controls that act directly on ball
 		float xAccel = Input.acceleration.x;
 		float zAccel = -Input.acceleration.z;
@@ -39,17 +44,32 @@ public class PlayerController : MonoBehaviour { //Motion tutorial class; not rel
 	}
 
 	void OnTriggerEnter(Collider other){
-		Debug.Log ("Triggered");
-		char[] name = other.gameObject.transform.parent.transform.parent.name.ToCharArray();
-		string tag = "" + name [name.Length - 1];
-		Debug.Log (tag);
-		int nametag = int.Parse("" + (name [name.Length - 1]));
-		if (nametag != 0) {
-			Debug.Log ("Building");
-			gameObject.transform.parent.GetComponent<BuildWorld> ().BuildChunk (nametag, nametag - 1);
+		Debug.Log ("Triggered by " + other.gameObject.transform.parent.transform.parent.name);
+		if (other.gameObject.transform.parent.transform.parent.name.Equals ("Enclosure")) {
+			KillPlayer ();
+		} else {
+			
+			char[] name = other.gameObject.transform.parent.transform.parent.name.ToCharArray ();
+			string tag = "" + name [name.Length - 1];
+			//Debug.Log (tag);
+			int nametag = int.Parse ("" + (name [name.Length - 1]));
+			if (nametag != 0) {
+				Debug.Log ("Building");
+				gameObject.transform.parent.GetComponent<BuildWorld> ().BuildChunk (nametag, nametag - 1);
+				GameObject.Find ("Enclosure").GetComponent<EnclosureController> ().setScore (nametag);
 //			Vector3 curr_position = gameObject.transform.position;
 //			gameObject.transform.position = new Vector3 (curr_position.x, curr_position.y, 0);
+			}
 		}
+	}
+
+	void KillPlayer(){
+		GameObject world = gameObject.transform.parent.gameObject;
+		world.GetComponent<BuildWorld> ().setContentRotation (0, 0, 0);
+		gameObject.transform.parent.GetComponent<BuildWorld> ().BuildChunk (4, 3);
+		gameObject.transform.position = startCoords;
+		gameObject.GetComponent<Rigidbody> ().velocity = new Vector3 (0, 0, 0);
+		GameObject.Find ("Enclosure").GetComponent<EnclosureController> ().reset ();
 	}
 			
 }
