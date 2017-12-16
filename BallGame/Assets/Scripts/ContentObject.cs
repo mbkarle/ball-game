@@ -26,7 +26,7 @@ public abstract class ContentObject /*: GameObject*/ {
 	public static void rotate(GameObject go, float xDegrees, float yDegrees, float zDegrees){
 
 		go.transform.localRotation = Quaternion.AngleAxis (xDegrees, Vector3.right) * Quaternion.AngleAxis (yDegrees, Vector3.up) * Quaternion.AngleAxis (zDegrees, Vector3.forward);
-		Debug.Log ("Requested: " + zDegrees + "; Received: " + go.transform.localRotation.eulerAngles.z);
+		//Debug.Log ("Requested: " + zDegrees + "; Received: " + go.transform.localRotation.eulerAngles.z);
 	}
 
 	public static void addMaterial(string goName, string matName){
@@ -34,7 +34,7 @@ public abstract class ContentObject /*: GameObject*/ {
 		GameObject go = GameObject.Find (goName);
 		go.GetComponent<Renderer>().materials = mats;
 	}
-
+		
 	public static GameObject buildPrefab(string name){
 		GameObject go = (Resources.Load (name, typeof(GameObject)) as GameObject);
 	//	go.transform.parent = GameObject.Find ("Content").transform;

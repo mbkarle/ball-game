@@ -3,7 +3,8 @@ using System.Collections;
 
 public class EnclosureController : MonoBehaviour {
 
-	private int score, nextScoreMagnitude;
+	private int nextScoreMagnitude, worldTier, initWorldTier;
+	public int score;
 	private Vector3 startCoords;
 	private Transform ball;
 	private float offset;
@@ -19,6 +20,8 @@ public class EnclosureController : MonoBehaviour {
 		nextScoreMagnitude = 1;
 		scoreText = gameObject.transform.GetChild (1).GetChild(0).gameObject;
 		setScore (0);
+		worldTier = world.GetComponent<BuildWorld> ().worldTier;
+		initWorldTier = worldTier;
 	}
 	
 	// Update is called once per frame
@@ -40,11 +43,23 @@ public class EnclosureController : MonoBehaviour {
 			nextScoreMagnitude++;
 			scoreText.GetComponent<TextMesh> ().fontSize -= 20;
 		}
+
+		if (worldTier > 0 && worldTier < 3) {
+//			Debug.Log ("Tier can be set");
+			if (Mathf.Floor(score/10) > worldTier-1) {
+				Debug.Log ("Raising tier");
+				worldTier++;
+				world.GetComponent<BuildWorld> ().worldTier = worldTier;
+			}
+		}
 	}
 
 	public void reset(){
 		gameObject.transform.position = startCoords;
 		setScore (-score);
 		scoreText.GetComponent<TextMesh> ().fontSize = 84;
+		worldTier = initWorldTier;
+		world.GetComponent<BuildWorld> ().worldTier = worldTier;
+		nextScoreMagnitude = 1;
 	}
 }
