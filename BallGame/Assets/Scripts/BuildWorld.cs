@@ -34,16 +34,22 @@ public class BuildWorld : MonoBehaviour {
 	
 		player = new GameObject ();
 		ContentSphere.convert (player, "player", .5f, 1.5f, 2, 3, 3, 3);
-		ContentSphere.addMaterial (player.name, "BallColor");
+		ContentSphere.addMaterial (player.name, "ballTexture");
 		player.AddComponent<PlayerController> ();
 		player.GetComponent<PlayerController> ().speed = 10;
+		GameObject playerTrigger = GameObject.CreatePrimitive (PrimitiveType.Sphere);
+		playerTrigger.transform.parent = player.transform;
+		playerTrigger.transform.localScale = new Vector3 (1, 1, 1);
+		playerTrigger.transform.localPosition = new Vector3 (0, 0, 0);
+		playerTrigger.GetComponent<Collider> ().isTrigger = true;
+		playerTrigger.GetComponent<MeshRenderer> ().enabled = false;
 	//	player.GetComponent<Rigidbody> ().isKinematic = true;
 
 
 		GameObject camera = GameObject.Find ("Main Camera");
 		camera.GetComponent<CameraController> ().player = player;
 
-		BuildChunk (4, null);
+		BuildChunk (6, null);
 
 		GameObject enclosure = Instantiate (ContentObject.buildPrefab ("Enclosure") as GameObject);
 		ContentObject.setTransform (enclosure, "Enclosure", 0, 0, 0, enclosure.transform.localScale.x, enclosure.transform.localScale.y, enclosure.transform.localScale.z, true);
@@ -59,7 +65,9 @@ public class BuildWorld : MonoBehaviour {
 
 		float zMovement = Input.GetAxis ("Horizontal");
 		float xMovement = Input.GetAxis ("Vertical");
-		contentRotation.x += speed * xMovement;
+		if (Mathf.Abs (contentRotation.x + speed * xMovement) < 55) {
+			contentRotation.x += speed * xMovement;
+		}
 		contentRotation.z += speed * -zMovement;
 		//Debug.Log (contentRotation);
 		//Transform gameObj = gameObject.transform;
@@ -90,6 +98,43 @@ public class BuildWorld : MonoBehaviour {
 //		}
 	}
 
+	public ArrayList addByTier(ArrayList chunkNames, int tier){
+		switch (tier) {
+		case 1:
+			chunkNames.Add ("Stage");
+			chunkNames.Add ("RightProtectedPlat");
+			chunkNames.Add ("LeftProtectedPlat");
+			chunkNames.Add ("MidObstacleStage");
+			chunkNames.Add ("HalfObstacleStage");
+			chunkNames.Add ("RevHalfObstacleStage");
+			//chunkNames.Add ("Tube");
+			break;
+
+		case 2:
+			chunkNames.Add ("CurvedPlatform");
+			chunkNames.Add ("RevCurvedPlatform");
+			chunkNames.Add ("Rails");
+			chunkNames.Add ("ScatteredObstacleStage");
+			chunkNames.Add ("RevScatteredObstacleStage");
+			break;
+
+		case 3:
+			chunkNames.Add ("CC Twisted Rails"); //counter clockwise
+			chunkNames.Add("C Twisted Rails"); //clockwise
+			chunkNames.Add ("RotStage");
+			break;
+
+		default:
+			chunkNames.Add ("MidObstacleStage");
+			chunkNames.Add ("HalfObstacleStage");
+			chunkNames.Add ("RevHalfObstacleStage");
+			chunkNames.Add ("ScatteredObstacleStage");
+			chunkNames.Add ("RevScatteredObstacleStage");
+			break;
+		}
+		return chunkNames;
+	}
+
 	public void BuildChunkDictionary (int tier){ //populates with appropriately difficult structures based on tier
 
 //		for (int i = 0; i < chunkDictionary.Keys.ToList().Count; i++) {
@@ -99,15 +144,10 @@ public class BuildWorld : MonoBehaviour {
 
 		ArrayList chunkNames = new ArrayList(); //arraylist and switch to avoid excessive redundancy
 
-		if (tier == 1) {
-			chunkNames.Add ("Stage");
-			chunkNames.Add ("Rails");
-			chunkNames.Add ("CC Twisted Rails"); //counter clockwise
-			chunkNames.Add("C Twisted Rails"); //clockwise
-
-		} else {
-			chunkNames.Add ("Stage");
-		}
+		do {
+			addByTier (chunkNames, tier);
+			tier--;
+		} while(tier > 0);
 
 		for (int i = 0; i < chunkNames.Count; i++) { //add to switch statement as more structures are created
 			string chunkName = (string)(chunkNames[i]);
@@ -141,6 +181,73 @@ public class BuildWorld : MonoBehaviour {
 					chunkDictionary ["C Twisted Rails"].Add (rail);
 				}
 				break;
+
+			case"RightProtectedPlat":
+				chunkDictionary.Add ("RightProtectedPlat", new ArrayList ());
+				chunkDictionary ["RightProtectedPlat"].Add (Instantiate (ContentObject.buildPrefab ("HalfProtectedPlatform")));
+				break;
+
+			case"LeftProtectedPlat":
+				chunkDictionary.Add ("LeftProtectedPlat", new ArrayList ());
+				GameObject plat = Instantiate (ContentObject.buildPrefab ("HalfProtectedPlatform"));
+				ContentObject.rotate (plat, 0, 180, 0);
+				chunkDictionary ["LeftProtectedPlat"].Add (plat);
+				break;
+
+			case "CurvedPlatform":
+				chunkDictionary.Add ("CurvedPlatform", new ArrayList ());
+				GameObject platform = Instantiate (ContentObject.buildPrefab ("CurvedPlatform"));
+				chunkDictionary["CurvedPlatform"].Add(platform);
+				break;
+
+			case "RevCurvedPlatform":
+				chunkDictionary.Add ("RevCurvedPlatform", new ArrayList ());
+				GameObject rev = Instantiate(ContentObject.buildPrefab("CurvedPlatform"));
+				ContentObject.rotate(rev, 0, 180, 0);
+				chunkDictionary["RevCurvedPlatform"].Add(rev);
+				break;
+
+			case "RotStage":
+				chunkDictionary.Add ("RotStage", new ArrayList ());
+				GameObject rotStage = Instantiate (ContentObject.buildPrefab ("OpenStage"));
+				rotStage.AddComponent<Revolve> ();
+				chunkDictionary ["RotStage"].Add (rotStage);
+				break;
+
+			case "Tube":
+				chunkDictionary.Add ("Tube", new ArrayList ());
+				chunkDictionary ["Tube"].Add (Instantiate (ContentObject.buildPrefab ("Tube")));
+				break;
+
+			case "MidObstacleStage":
+				chunkDictionary.Add ("MidObstacleStage", new ArrayList ());
+				chunkDictionary ["MidObstacleStage"].Add (Instantiate (ContentObject.buildPrefab ("MidObstacleStage")));
+				break;
+
+			case "HalfObstacleStage":
+				chunkDictionary.Add ("HalfObstacleStage", new ArrayList ());
+				chunkDictionary ["HalfObstacleStage"].Add (Instantiate (ContentObject.buildPrefab ("HalfObstacleStage")));
+				break;
+
+			case "RevHalfObstacleStage":
+				chunkDictionary.Add ("RevHalfObstacleStage", new ArrayList ());
+				GameObject revHalfObstacleStage = Instantiate (ContentObject.buildPrefab ("HalfObstacleStage"));
+				ContentObject.rotate (revHalfObstacleStage, 0, 180, 0);
+				chunkDictionary ["RevHalfObstacleStage"].Add (revHalfObstacleStage);
+				break;
+
+			case "ScatteredObstacleStage":
+				chunkDictionary.Add ("ScatteredObstacleStage", new ArrayList ());
+				chunkDictionary ["ScatteredObstacleStage"].Add (Instantiate (ContentObject.buildPrefab ("ScatteredObstacleStage")));
+				break;
+
+			case "RevScatteredObstacleStage":
+				chunkDictionary.Add ("RevScatteredObstacleStage", new ArrayList ());
+				GameObject scatteredObsStage = Instantiate (ContentObject.buildPrefab ("ScatteredObstacleStage"));
+				ContentObject.rotate (scatteredObsStage, 0, 180, 0);
+				chunkDictionary ["RevScatteredObstacleStage"].Add (scatteredObsStage);
+				break;
+
 			default:
 				Debug.Log ("Structure name not recognized");
 				break;
@@ -180,16 +287,16 @@ public class BuildWorld : MonoBehaviour {
 					foreach (Transform child in thisTransform) {
 						startingZ += child.localScale.z;
 					}
-					if (index - (removal_index + 1) == 0) { //destroy trigger on chunk0
-						foreach (Transform t in toChange.transform) {
-							Transform trigger = t.GetChild (t.childCount - 1);
-							GameObject.Destroy (trigger.gameObject);
-						}
-					}
+//					if (index - (removal_index + 1) == 0) { //destroy trigger on chunk0
+//						foreach (Transform t in toChange.transform) {
+//							Transform trigger = t.GetChild (t.childCount - 1);
+//							GameObject.Destroy (trigger.gameObject);
+//						}
+//					}
 					chunksList.Add (toChange); //add objects being kept to the replacement list
 				}
 				//shift player back to start
-				Debug.Log("Moving player");
+//				Debug.Log("Moving player");
 				player.transform.position = new Vector3 (player.transform.position.x, player.transform.position.y, player.transform.position.z - sum);
 			}
 		}
@@ -228,14 +335,19 @@ public class BuildWorld : MonoBehaviour {
 			//set position of new chunk
 			float zLoc;
 			int tag = (removal_index.HasValue) ? chunksList.Count - 1 : i;
-			Debug.Log ("tag: " + tag);
+//			Debug.Log ("tag: " + tag);
 			if (tag == 0) {
+				float sum = 0;
 				foreach (Transform t in obj.transform) {
 					Transform trigger = t.GetChild (t.childCount - 1);
 					GameObject.Destroy (trigger.gameObject);
+					sum += t.localScale.z;
 				}
-				zLoc = 0;
-					
+				zLoc = /*sum * 3 / 8*/ 0;
+				//startingZ = zLoc;
+				if (obj.transform.GetChild (0).gameObject.tag == "OffsetZ") {
+					zLoc += obj.transform.GetChild (0).localScale.z/2;
+				}	
 			} else {//if chunk is not the very first, build based on previous in list
 				float sum = 0;
 				Transform parentTransform = ((GameObject)(chunksList [tag - 1])).transform;
@@ -251,10 +363,23 @@ public class BuildWorld : MonoBehaviour {
 				foreach (Transform child in parentTransform) {
 					sum += child.localScale.z;
 				}
-				zLoc = parentTransform.position.z + sum;
+				zLoc = parentTransform.position.z + sum /*+ startingZ*/;
 				ContentObject.rotate (obj, 0, 0, zRot);
+				if (parentTransform./*transform.*/GetChild (0).gameObject.tag == "OffsetZ") {
+					zLoc += parentTransform.GetChild (0).localScale.z / 2;
+				}
+				if (obj.transform.GetChild (0).gameObject.tag == "OffsetZ") {
+					zLoc += obj.transform.GetChild (0).localScale.z / 2;
+				}
 			}
+			
 			ContentObject.setTransform (obj, "chunk" + tag, 0, 0, zLoc, obj.transform.localScale.x, obj.transform.localScale.y, obj.transform.localScale.z, true);
+
+//			GameObject gem = Instantiate(ContentObject.buildPrefab ("Gem"));
+//			gem.transform.parent = GameObject.Find ("Gems").transform;
+//			gem.transform.position = new Vector3 (0, gem.transform.localScale.y * 2, zLoc + 10);
+//			gem.AddComponent<Revolve> ();
+//			gem.GetComponent<Revolve>().setInitRotation(new Vector3(45, 0, 45));
 		}
 		foreach (string al in chunkDictionary.Keys.ToList()) { //destroy all instantiated objects
 			foreach (GameObject go in chunkDictionary[al]) {
