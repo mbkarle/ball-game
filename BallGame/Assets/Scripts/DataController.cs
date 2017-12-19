@@ -20,11 +20,15 @@ public class DataController : MonoBehaviour {
 		}
 	}
 
-	void OnGUI () {
+	void Start() {
+		control.Load ();
+	}
+
+	void OnGUI () { //just displays the "XP" in the top left
 		GUI.Label (new Rect (10, 10, 100, 30), "XP:" + experience);
 	}
 
-	public void Save() {
+	public void Save() { //we can have multiple files for each player but this just has one
 		BinaryFormatter bf = new BinaryFormatter ();
 		FileStream file = File.Create (Application.persistentDataPath + "/playerInfo.dat"); //data extension can be anything
 
@@ -33,6 +37,7 @@ public class DataController : MonoBehaviour {
 		data.experience = experience;
 
 		bf.Serialize (file, data); //you can save this data to all sorts of stuff (e.g. internet)
+		//file is in binary so unless they're a l33t h4x0r nobody can edit these
 		file.Close ();
 	}
 

@@ -22,6 +22,7 @@ public class EnclosureController : MonoBehaviour {
 		setScore (0);
 		worldTier = world.GetComponent<BuildWorld> ().worldTier;
 		initWorldTier = worldTier;
+
 	}
 	
 	// Update is called once per frame
@@ -55,6 +56,8 @@ public class EnclosureController : MonoBehaviour {
 	}
 
 	public void reset(){
+		DataController.control.experience += score;
+		DataController.control.Save ();
 		gameObject.transform.position = startCoords;
 		setScore (-score);
 		scoreText.GetComponent<TextMesh> ().fontSize = 84;
