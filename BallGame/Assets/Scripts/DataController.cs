@@ -25,7 +25,12 @@ public class DataController : MonoBehaviour {
 	}
 
 	void OnGUI () { //just displays the "XP" in the top left
-		GUI.Label (new Rect (10, 10, 100, 30), "XP:" + experience);
+		GUIStyle myButtonStyle = new GUIStyle(GUI.skin.button);
+		myButtonStyle.fontSize = 30;
+		Font myFont = (Font)Resources.Load("Fonts/comic", typeof(Font));
+		myButtonStyle.font = myFont;
+		myButtonStyle.normal.textColor = Color.black;
+		GUI.Label (new Rect (10, 10, 100, 30), "XP: " + experience, myButtonStyle);
 	}
 
 	public void Save() { //we can have multiple files for each player but this just has one
